@@ -64,6 +64,10 @@ function App(){
             if (i === 5 && savedDice.length === 2 ){
                 let score = 50
                 possibleScores.push([5, { score }], [5, { score, dieCount: 2 }])
+            }
+            if (i === 6 && possibleScores.length === 0 ){
+                setCurrentRollScore(0);
+                setRemainingDiceCount(6);
             } 
         }
         console.log(possibleScores);
@@ -74,6 +78,9 @@ function App(){
     const addToTotal = (num) => {
         setCurrentRollScore(currentRollScore + num.score)
         setRemainingDiceCount(remainingDiceCount - num.dieCount)
+        if(remainingDiceCount === 0){
+            setRemainingDiceCount(6);
+        }
         console.log(currentRollScore, remainingDiceCount);
     }
 
