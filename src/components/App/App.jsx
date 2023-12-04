@@ -7,6 +7,7 @@ function App(){
     const [allPlayersTotalScore, setAllPlayersTotalScore] = useState([])
     const [remainingDiceCount, setRemainingDiceCount] = useState(6);
     const [possibleScoresDisplay, setPossibleScoresDisplay] = useState([]);
+    const [currentRoll, setCurrentRoll] = useState([]);
 
     const getRollValue = () => {
         return Math.floor(Math.random() * 6 + 1);
@@ -20,6 +21,7 @@ function App(){
         }
         console.log(roll);
         getScores(roll);
+        setCurrentRoll(roll);
     }
 
     const getScores = (roll) => {
@@ -66,8 +68,8 @@ function App(){
                 possibleScores.push([5, { score, dieCount: 1 }], [5, { score, dieCount: 1 }])
             }
             if (i === 6 && possibleScores.length === 0 ){
-                setCurrentRollScore(0);
                 setRemainingDiceCount(6);
+                setHeldDice([]);
             } 
         }
         console.log(possibleScores);
@@ -80,6 +82,7 @@ function App(){
         setCurrentRollScore(currentRollScore + num.score)
         setRemainingDiceCount(remainingDiceCount - num.dieCount)
         setHeldDice([...heldDice, num])
+        console.log(heldDice);
         if(remainingDiceCount === 0){
             setRemainingDiceCount(6);
         }
@@ -100,12 +103,20 @@ function App(){
             <h1>Hot Ass Dice, baby!</h1>
             <div>
                 {allPlayersTotalScore.map((score) => (
-                    <h3>Current Score: {score}</h3>
+                    <h3>Total Score: {score}</h3>
                 ))}
+                <h3>Current Round Score: {currentRollScore}</h3>
+                <h3>Remaining Dice: {remainingDiceCount}</h3>
                 <h2>Held Dice:</h2>
                 {heldDice.map((dice) => (
-                    <h3>{dice.score ? '' : dice}</h3>
+                    <h3>{!dice.score ? dice : ''}</h3>
                 ))}
+                <h3>Current Roll:</h3>
+                <h4>
+                {currentRoll.map((roll) => (
+                    <span>{roll} </span>
+                ))}
+                </h4>
             </div>
             <button onClick={() => rollTheDice(remainingDiceCount)}>Roll!</button>
             <button onClick={holdScore}>Hold Score!</button>
