@@ -4,10 +4,11 @@ function App(){
 
     const [currentRollScore, setCurrentRollScore] = useState(0);
     const [heldDice, setHeldDice] = useState([]);
-    const [allPlayersTotalScore, setAllPlayersTotalScore] = useState([])
+    const [allPlayersTotalScore, setAllPlayersTotalScore] = useState(0)
     const [remainingDiceCount, setRemainingDiceCount] = useState(6);
     const [possibleScoresDisplay, setPossibleScoresDisplay] = useState([]);
     const [currentRoll, setCurrentRoll] = useState([]);
+    const [roundOver, setRoundOver] = useState(false);
 
     const getRollValue = () => {
         return Math.floor(Math.random() * 6 + 1);
@@ -27,7 +28,7 @@ function App(){
     const getScores = (roll) => {
         let savedDice
         let possibleScores = [];
-        let potentialScore = [];
+        let boxcarCheck = [];
         let allNumbers = [1, 2, 3, 4, 5, 6];
         const checkForStraight = allNumbers.every(i => roll.includes(i))
         if (checkForStraight){
@@ -36,9 +37,9 @@ function App(){
         for (let i=1; i<7; i++){
             savedDice = roll.filter(die => die === i);
             if (savedDice.length === 2){
-                potentialScore.push([...savedDice])
-                if (potentialScore.length === 3){
-                    possibleScores.push([...potentialScore[0], ...potentialScore[1], ...potentialScore[2], {score: 1500, dieCount: 6}])
+                boxcarCheck.push([...savedDice])
+                if (boxcarCheck.length === 3){
+                    possibleScores.push([...boxcarCheck[0], ...boxcarCheck[1], ...boxcarCheck[2], {score: 1500, dieCount: 6}])
                 }
             } 
             if (savedDice.length >= 3){
@@ -90,10 +91,11 @@ function App(){
     }
 
     const holdScore = () => {
-        setAllPlayersTotalScore([Number(currentRollScore) + Number(allPlayersTotalScore)]);
+        setAllPlayersTotalScore(Number(currentRollScore) + Number(allPlayersTotalScore));
         setCurrentRollScore(0);
         setRemainingDiceCount(6);
         setHeldDice([])
+        setRoundOver(true);
     }
 
 
@@ -102,9 +104,7 @@ function App(){
         <div className="hot-dice">
             <h1>Hot Ass Dice, baby!</h1>
             <div>
-                {allPlayersTotalScore.map((score) => (
-                    <h3>Total Score: {score}</h3>
-                ))}
+                <h3>Total Score: {allPlayersTotalScore}</h3>
                 <h3>Current Round Score: {currentRollScore}</h3>
                 <h3>Remaining Dice: {remainingDiceCount}</h3>
                 <h2>Held Dice:</h2>
@@ -119,7 +119,14 @@ function App(){
                 </h4>
             </div>
             <button onClick={() => rollTheDice(remainingDiceCount)}>Roll!</button>
-            <button onClick={holdScore}>Hold Score!</button>
+            {allPlayersTotalScore < 1000 && currentRollScore > 1000 ?
+                <button
+                onClick={holdScore}
+                >Hold Score!</button> : ""}
+            {allPlayersTotalScore > 1000 ?
+                <button
+                onClick={holdScore}
+                >Hold Score!</button> : ""}
                 <div>
                         {possibleScoresDisplay.map((scores) => (
                             <ul>
