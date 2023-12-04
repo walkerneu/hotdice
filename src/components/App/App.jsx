@@ -59,11 +59,11 @@ function App(){
             }
             if (i === 1 && savedDice.length === 2 ){
                 let score = 100
-                possibleScores.push([1, { score }], [1, { score, dieCount: 2 }])
+                possibleScores.push([1, { score, dieCount: 1 }], [1, { score, dieCount: 1 }])
             }
             if (i === 5 && savedDice.length === 2 ){
                 let score = 50
-                possibleScores.push([5, { score }], [5, { score, dieCount: 2 }])
+                possibleScores.push([5, { score, dieCount: 1 }], [5, { score, dieCount: 1 }])
             }
             if (i === 6 && possibleScores.length === 0 ){
                 setCurrentRollScore(0);
@@ -76,12 +76,21 @@ function App(){
         return possibleScores;
     }
     const addToTotal = (num) => {
+        console.log("dieCount", num.dieCount)
         setCurrentRollScore(currentRollScore + num.score)
         setRemainingDiceCount(remainingDiceCount - num.dieCount)
+        setHeldDice([...heldDice, num])
         if(remainingDiceCount === 0){
             setRemainingDiceCount(6);
         }
         console.log(currentRollScore, remainingDiceCount);
+    }
+
+    const holdScore = () => {
+        setAllPlayersTotalScore([Number(currentRollScore) + Number(allPlayersTotalScore)]);
+        setCurrentRollScore(0);
+        setRemainingDiceCount(6);
+        setHeldDice([])
     }
 
 
@@ -89,7 +98,17 @@ function App(){
     return (
         <div className="hot-dice">
             <h1>Hot Ass Dice, baby!</h1>
+            <div>
+                {allPlayersTotalScore.map((score) => (
+                    <h3>Current Score: {score}</h3>
+                ))}
+                <h2>Held Dice:</h2>
+                {heldDice.map((dice) => (
+                    <h3>{dice.score ? '' : dice}</h3>
+                ))}
+            </div>
             <button onClick={() => rollTheDice(remainingDiceCount)}>Roll!</button>
+            <button onClick={holdScore}>Hold Score!</button>
                 <div>
                         {possibleScoresDisplay.map((scores) => (
                             <ul>
