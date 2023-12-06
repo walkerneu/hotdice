@@ -9,11 +9,17 @@ function App() {
   const [currentRoll, setCurrentRoll] = useState([]);
   const [roundOver, setRoundOver] = useState(false);
 
-  const getRollValue = () => {
+  const getDieValue = () => {
     return Math.floor(Math.random() * 6 + 1);
   };
 
-  const rollTheDice = (num) => {
+  const rollTheDice = () => {
+    if (remainingDiceCount === 6) {
+        setHeldDice([]);
+    }
+    if (remainingDiceCount === 0) {
+      setRemainingDiceCount(6);
+    }
     if (roundOver) {
       setRemainingDiceCount(6);
       setCurrentRollScore(0);
@@ -21,8 +27,8 @@ function App() {
     }
     setPossibleScoresDisplay([]);
     const roll = [];
-    for (let i = 0; i < num; i++) {
-      roll.push(getRollValue());
+    for (let i = 0; i < remainingDiceCount; i++) {
+      roll.push(getDieValue());
     }
     console.log(roll);
     getScores(roll);
@@ -95,21 +101,17 @@ function App() {
         setRoundOver(true);
       }
     }
-    console.log(possibleScores);
     setPossibleScoresDisplay(possibleScores);
-    console.log(possibleScoresDisplay);
-    return possibleScores;
   };
-  const addToTotal = (nums, score) => {
-    console.log("dieCount", score.dieCount);
+  const addToTotal = (nums, score, event) => {
     setCurrentRollScore(currentRollScore + score.score);
-    setRemainingDiceCount(remainingDiceCount - score.dieCount);
     setHeldDice([...heldDice, nums]);
-    console.log(heldDice);
-    if (remainingDiceCount === 0) {
+    if(remainingDiceCount - score.dieCount === 0){
       setRemainingDiceCount(6);
     }
-    console.log(currentRollScore, remainingDiceCount);
+    else {
+      setRemainingDiceCount(remainingDiceCount - score.dieCount);
+    }
   };
 
   const holdScore = () => {
@@ -120,6 +122,7 @@ function App() {
     setRemainingDiceCount(6);
     setHeldDice([]);
     setRoundOver(true);
+    setPossibleScoresDisplay([]);
   };
 
   return (
@@ -140,24 +143,20 @@ function App() {
           ))}
         </h4>
       </div>
-      <button onClick={() => rollTheDice(remainingDiceCount)}>Roll!</button>
-      {allPlayersTotalScore < 1000 && currentRollScore > 1000 ? (
-        <button onClick={holdScore}>Hold Score!</button>
-      ) : (
-        ""
-      )}
-      {allPlayersTotalScore > 1000 ? (
+      <button onClick={rollTheDice}>Roll!</button>
+      {(allPlayersTotalScore <= 1000 && currentRollScore >= 1000) ||
+      allPlayersTotalScore >= 1000 ? (
         <button onClick={holdScore}>Hold Score!</button>
       ) : (
         ""
       )}
       <div>
         {possibleScoresDisplay.map((scores) => (
-          <ul onClick={() => addToTotal(scores.slice(0, -1), scores[scores.length-1])}>
+          <ul
+            onClick={() =>
+              addToTotal(scores.slice(0, -1), scores[scores.length - 1], event)}>
             {scores.map((score) => (
-              <li>
-                {score.score ? score.score : score}
-              </li>
+              <li>{score.score ? score.score : score}</li>
             ))}
           </ul>
         ))}
